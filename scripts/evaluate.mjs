@@ -1,0 +1,13 @@
+import {writeFile,mkdir} from 'node:fs/promises';
+import {cohort,generateSession,publicReadings} from '../dist/lib/data.js';
+import {estimate,forecast,MODEL_VERSION} from '../dist/lib/twin.js';
+const patients=cohort(300,73021),records=[];
+for(const p of patients){const raw=generateSession(p),rows=publicReadings(raw);for(const now of [60,90,120,150,180]){
+ const s=estimate(p,rows.filter(x=>x.minute<=now),now);if(!s.valid||s.sbp<90)continue;
+ const f=forecast(p,s),future=raw.filter(x=>x.minute>now&&x.minute<=now+30),actual=Math.min(...future.map(x=>x.truth));
+ const last=s.bp.sbp,trendNadir=Math.min(last,last+s.slope*30);
+ records.push({patient:p.id,now,actual,event:actual<90,twin:f.nadir,persistence:last,trend:trendNadir,lowerBand:Math.min(...f.points.slice(1).map(x=>x.low)),upperBand:Math.min(...f.points.slice(1).map(x=>x.high))});
+}}
+function metric(key){let tp=0,tn=0,fp=0,fn=0;for(const r of records){const positive=r[key]<90;if(positive&&r.event)tp++;else if(positive)fp++;else if(r.event)fn++;else tn++;}const divide=(a,b)=>b?a/b:null;return {mae:records.reduce((s,r)=>s+Math.abs(r[key]-r.actual),0)/records.length,recall:divide(tp,tp+fn),specificity:divide(tn,tn+fp),precision:divide(tp,tp+fp),confusion:{tp,tn,fp,fn}};}
+const result={model:MODEL_VERSION,data:'Synthetic only; same-generating-family engineering evaluation, not clinical evidence.',seed:73021,patients:patients.length,windows:records.length,eventWindows:records.filter(x=>x.event).length,protocol:'Patient-seeded held-out cohort; one session per patient; windows at 60,90,120,150,180 min; endpoint minimum latent synthetic SBP over next 30 min; current low estimates excluded. Repeated windows are correlated.',threshold:90,bandCoverage:records.filter(r=>r.actual>=r.lowerBand&&r.actual<=r.upperBand).length/records.length,methods:{'Personalised twin':metric('twin'),'Recent linear trend':metric('trend'),'Last cuff carried forward':metric('persistence')},limitations:['No clinical training or validation','Generator and model share fluid-balance assumptions','Synthetic priors supplied rather than fitted to real records','No confidence intervals; repeated windows are correlated','No prospective workflow or clinical outcome measurements','No subgroup fairness conclusion'],reproduce:'npm run evaluate'};
+await mkdir('dist/data',{recursive:true});await writeFile('dist/data/evaluation.json',JSON.stringify(result,null,2)+'\n');await writeFile('docs/evaluation-windows.csv','patient,minute,actual_nadir,twin_nadir,trend_nadir,persistence_nadir,event\n'+records.map(r=>[r.patient,r.now,r.actual,r.twin,r.trend,r.persistence,r.event].join(',')).join('\n')+'\n');console.log(JSON.stringify(result,null,2));
