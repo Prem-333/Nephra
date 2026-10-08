@@ -6,3 +6,4 @@
 - GitHub Actions references `actions/checkout` and `actions/setup-node`, each under its upstream license.
 - Clinical papers are linked, not redistributed. Their authors do not endorse this prototype. No external paper's figures are copied into the architecture or presentation.
 - All displayed patient names and observations are fictitious. Original screenshots show this project's synthetic interface.
+- Male and female body illustrations are AI-generated educational assets, not patient photographs or diagnostic anatomy. Their proportions do not represent a measured patient body.

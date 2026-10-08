@@ -35,6 +35,7 @@ def screenshot(c,name):
  if not path.exists():raise FileNotFoundError(path)
  img=ImageReader(str(path));iw,ih=img.getSize()
  crops={'dashboard.png':(247,300,1410,925),'scenarios.png':(248,265,1410,948),'dropout.png':(248,263,1410,865),'workflow.png':(248,178,1410,969)}
+ crops['body-twin-female.png']=(242,169,1406,973)
  x1,y1,x2,y2=crops[name];cw,ch=x2-x1,y2-y1;scale=min(1152/cw,472/ch)
  dx=64+(1152-cw*scale)/2;dy=70+(472-ch*scale)/2
  c.saveState();clip=c.beginPath();clip.rect(dx,dy,cw*scale,ch*scale);c.clipPath(clip,stroke=0)

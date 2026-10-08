@@ -8,7 +8,14 @@ Demonstrate fusion of a historical synthetic patient record and a synthetic medi
 ## Not supported
 Real patient use; diagnosis; treatment recommendations; autonomous pump control; medication dosing; symptomatic IDH definitions; dialysis adequacy; prediction of mortality or kidney recovery; medical-device compliance. No authentication, production clinical audit trail, FHIR integration or sensor-device integration is implemented.
 
-## State and equations
+## Interactive body heatmap
+The male/female illustration follows the synthetic record's sex field. If that field is unavailable, the image is explicitly labelled generic. Illustration selection does not affect the estimator or forecasts.
+
+Chest, arm, flank and leg markers organise systemic pressure, circulating blood volume, historical kidney context and whole-body fluid balance. Locations are schematic. Hover, keyboard focus and tap disclose whether each value is observed, modelled, historical or unavailable. Red/amber pressure colours reuse the existing review status; other measured signals use teal, historical context blue, and unmeasured regions grey. No spatial interpolation or organ-specific severity estimation is performed.
+
+The display is not a thermogram or a scan of organ damage, tissue hydration or perfusion. It contains no regional sensor data. Missing dynamic data removes dynamic values and turns their markers neutral; labelled historical context remains visible. Generated body illustrations are not images of real patients.
+
+## Estimation equations
 Let D be circulating-volume deficit in litres; V0 = 0.07 x dry weight in kg is a simplified effective circulating volume. The coefficient is a modelling assumption, not an individual clinical measurement.
 
 - State transition: D(t+dt) = D(t) + [UF(t) - refill(t)] x dt / 60.
@@ -52,3 +59,4 @@ Clinical partnership and oversight; ethics and data-governance approval; retrosp
 
 ## References
 [KDIGO conference report](https://kdigo.org/wp-content/uploads/2017/05/KDIGO-BP-Volume-in-Dialysis-FINAL.pdf); [real-time IDH prediction study](https://pmc.ncbi.nlm.nih.gov/articles/PMC10310501/); [plasma refilling study](https://pmc.ncbi.nlm.nih.gov/articles/PMC10278774/).
+

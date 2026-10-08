@@ -7,7 +7,7 @@
 
 NEPHRA combines a synthetic historical record with a changing medical-IoT stream to forecast systolic blood pressure over the next 30 minutes. Staff can inspect why the forecast changed, explore a hypothetical fluid-removal scenario, and export a review draft without retyping the observations.
 
-![NEPHRA dialysis command centre](docs/screenshots/dashboard.png)
+![NEPHRA patient-specific body signal map](docs/screenshots/body-twin-female.png)
 
 > This prototype is not clinically validated. It uses only synthetic patients. It cannot diagnose, prescribe, control a machine, or substitute for clinical monitoring. The 90% figure is a target for repetitive preparation time under explicit assumptions, not measured total workload reduction.
 
@@ -61,6 +61,7 @@ KDIGO describes intradialytic hypotension as a serious complication and recommen
 | Capability | Implementation |
 |---|---|
 | Six personalised digital twins | Separate synthetic records, parameters and seeded sensor streams |
+| Interactive male / female body heatmap | Patient-matched illustration; hover, focus or tap reveals values, provenance and limits |
 | Online data fusion | Causal replay, scalar Kalman state correction, online refill estimate and recent pressure trend |
 | Localised outcome prediction | 30-minute pressure trajectory, reference crossing, sensitivity band and review status |
 | Scenario lab | Change hypothetical UF rate; compare pressure and fluid removed from the same current state |
@@ -129,7 +130,7 @@ The twin misses **17 of 128** synthetic event windows. Persistence is intentiona
 
 The benchmark cohort is separate from the six demo patients; it is **not a blinded external test set**. It was used for engineering inspection. No clinical records, model-training cohort or external validation cohort are included. There are no accuracy, clinical-benefit, regulatory-clearance or funding claims.
 
-See [machine-readable metrics](dist/data/evaluation.json), [per-window predictions](docs/evaluation-windows.csv) and [validation record](docs/validation.md). Run `npm run evaluate` to regenerate metrics. Thirteen automated checks cover causal isolation, data quality, personalisation, scenario invariants and input rejection.
+See [machine-readable metrics](dist/data/evaluation.json), [per-window predictions](docs/evaluation-windows.csv) and [validation record](docs/validation.md). Run `npm run evaluate` to regenerate metrics. Seventeen automated checks cover causal isolation, data quality, personalisation, scenario invariants and input rejection.
 
 ## The 90% workload target
 
@@ -198,5 +199,6 @@ tests/                   Behavioural model tests
 4. [Happiest Health Digital Twin Challenge 2026](https://unstop.com/hackathons/crp-digital-twin-challenge-2026-happiest-health-1757873/amp). Requirements checked 7 October 2026; confirm portal wording before submission.
 
 NEPHRA's proposed distinction is the combination of inspectable state updates, patient-specific counterfactuals with visible tradeoffs, failure handling and review preparation. It is not claimed to be the first dialysis predictor or a patentable invention.
+
 
 
