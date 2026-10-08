@@ -62,6 +62,7 @@ KDIGO describes intradialytic hypotension as a serious complication and recommen
 |---|---|
 | Six personalised digital twins | Separate synthetic records, parameters and seeded sensor streams |
 | Interactive male / female body heatmap | Patient-matched illustration; hover, focus or tap reveals values, provenance and limits |
+| Accessible body exploration | Larger phone tap targets, immediate selected-value summary, links between body and details, keyboard focus retained during replay |
 | Online data fusion | Causal replay, scalar Kalman state correction, online refill estimate and recent pressure trend |
 | Localised outcome prediction | 30-minute pressure trajectory, reference crossing, sensitivity band and review status |
 | Scenario lab | Change hypothetical UF rate; compare pressure and fluid removed from the same current state |

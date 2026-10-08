@@ -27,6 +27,9 @@ Checked 7 October 2026. Synthetic engineering prototype only.
 - Browser: selecting Arjun changed the illustration and readings from Meera's values to 97.2% RBV and 71 bpm.
 - Browser: dropout withheld the pressure forecast and cleared circulating-volume and fluid readings; restoring sensors restored readings.
 - Browser: body view stayed within a 390-pixel mobile viewport, with stacked cards and no horizontal overflow.
+- Mobile UX: all five body targets measure 44 by 44 CSS pixels. The selected value appears above the body; Full details and Back to body map links move focus to their destinations.
+- Replay UX: after advancing from minute 120 to 138, the fluid region remained selected and its summary updated from 1.76 to 2.02 L. Focus remained on Pause; Space paused playback.
+- Desktop UX: pointer hover displayed the circulation tooltip and corresponding details. Updated phone and desktop screenshots are in `docs/screenshots/`.
 
 ## Interpretation of all checks
 These checks establish specific software behaviour. They do not establish clinical validity, real sensor accuracy, clinical outcome improvement, production security, regulatory status or realised workload savings. Separate evidence is required for every such claim.
