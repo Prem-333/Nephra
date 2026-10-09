@@ -1,6 +1,6 @@
 # Validation record
 
-Checked 7 October 2026. Synthetic engineering prototype only.
+Original checks 7 October 2026; bug audit completed 9 October 2026. Synthetic engineering prototype only. See [bug audit and fixes](bug-audit.md) for the current 27-test run and browser regressions; the original release record follows.
 
 ## Automated model checks
 `npm run check`: 17 tests passed. The checks cover future-data isolation, personalisation, monotonic scenario response, preservation of observed history, stale/poor/insufficient data, invalid values, timestamp order, supported scenario bounds, deterministic cohort generation, finite sensitivity bands, workload arithmetic and current-low precedence.

@@ -1,6 +1,6 @@
 # NEPHRA model card
 
-**Version:** nephra-state-space-1.0. **Status:** synthetic research prototype. **Date:** 7 October 2026.
+**Version:** nephra-state-space-1.1. **Status:** synthetic research prototype. **Date:** 8 October 2026.
 
 ## Intended use
 Demonstrate fusion of a historical synthetic patient record and a synthetic medical-IoT stream. Forecast an absolute systolic blood-pressure crossing below 90 mmHg in the next 30 minutes. Explore hypothetical ultrafiltration changes. Support evaluation of future research, not clinical decisions.
@@ -18,11 +18,11 @@ The display is not a thermogram or a scan of organ damage, tissue hydration or p
 ## Estimation equations
 Let D be circulating-volume deficit in litres; V0 = 0.07 x dry weight in kg is a simplified effective circulating volume. The coefficient is a modelling assumption, not an individual clinical measurement.
 
-- State transition: D(t+dt) = D(t) + [UF(t) - refill(t)] x dt / 60.
+- Observed-state transition: D(t+dt) = D(t) + change in cumulative removed volume - refill(t) x dt / 60. Future scenarios use the hypothetical UF rate x dt / 60. The filter starts at the first available observation, without inventing earlier removal.
 - Sensor observation: D_observed = V0 x (1 - RBV/100).
 - Scalar Kalman update: K = P / (P + R); D = D_predicted + K x (D_observed - D_predicted).
 - Process variance increases by 0.00015 x dt; measurement variance R = 0.0025. These are chosen demo constants, not clinically fitted noise estimates.
-- Online refill: 0.65 x recent RBV-derived estimate + 0.35 x historical prior adjusted for removal; clamped to 0.05-1.5 L/hour.
+- Online refill: recent average removal = change in cumulative removed volume x 60 / elapsed minutes. Subtract RBV-derived deficit change per hour, then blend 0.65 x this recent estimate + 0.35 x historical prior adjusted for removal; clamped to 0.05-1.5 L/hour.
 - Projected refill decays exponentially with horizon using excess-volume-dependent time constant. This is a simplified phenomenological assumption.
 - Pressure change: 0.7 x (-sensitivity x incremental D) + 0.3 x (recent slope adjusted for UF scenario x elapsed minutes).
 - Pressure observations for slope: reliable cuff values in the preceding 25 minutes.

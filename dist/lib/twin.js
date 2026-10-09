@@ -1,4 +1,4 @@
-export const MODEL_VERSION='nephra-state-space-1.0';
+export const MODEL_VERSION='nephra-state-space-1.1';
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const finite=(v,a,b)=>typeof v==='number'&&Number.isFinite(v)&&v>=a&&v<=b;
 
@@ -6,17 +6,20 @@ export function validatePatient(p) {
   for(const [key,a,b] of [['weight',30,200],['baselineSBP',80,220],['refill',0.1,1.5],['sensitivity',10,180],['uf',0,2],['excess',.5,8]])
     if(!finite(p?.[key],a,b)) throw new Error(`Invalid patient ${key}: expected ${a} to ${b}.`);
   if(typeof p.id!=='string'||!/^[-a-zA-Z0-9]{1,60}$/.test(p.id)) throw new Error('Patient ID must be 1-60 letters, digits or hyphens.');
+  if(p.history!==undefined&&(!Number.isInteger(p.history)||!finite(p.history,0,6)))throw new Error('Prior episode history must be an integer from 0 to 6.');
   return p;
 }
 export function validateReadings(rows) {
   if(!Array.isArray(rows)||!rows.length||rows.length>1441) throw new Error('Supply 1-1441 chronological readings.');
-  let last=-1;
+  let last=-1,removed=-1;
   for(const x of rows) {
+    if(!x||typeof x!=='object')throw new Error('Each reading must be an object.');
     if(!finite(x.minute,0,1440)||x.minute<=last) throw new Error('Reading minutes must be strictly increasing.');
     for(const [key,a,b] of [['uf',0,2],['rbv',30,110],['hr',30,220],['removed',0,15]]) if(!finite(x[key],a,b)) throw new Error(`Invalid sensor ${key}.`);
     if(x.sbp!==null&&!finite(x.sbp,40,240)) throw new Error('Invalid systolic blood pressure.');
     if(!['good','poor'].includes(x.quality)) throw new Error('Sensor quality must be good or poor.');
-    last=x.minute;
+    if(x.removed<removed)throw new Error('Cumulative fluid removal must not decrease.');
+    last=x.minute;removed=x.removed;
   } return rows;
 }
 function regression(rows) {
@@ -38,16 +41,16 @@ export function estimate(p,readings,now) {
   const cuff=good.filter(x=>x.sbp!==null), recent=cuff.filter(x=>x.minute>=now-25);
   const last=good.at(-1),bp=cuff.at(-1);
   if(!last||!bp||recent.length<3||now-last.minute>3||now-bp.minute>10) return {valid:false,reason:'Insufficient or stale data. A recent cuff reading and at least three good readings in 25 minutes are required.',observed,now};
-  const plasma=p.weight*.07; let deficit=0,variance=.04,previous=0;
+  const plasma=p.weight*.07; let deficit=0,variance=.04,previous=good[0].minute,previousRemoved=good[0].removed;
   for(const row of good) {
     const dt=row.minute-previous;
-    deficit+=(row.uf-p.refill*Math.max(.28,1-row.removed*.1/p.excess))*dt/60;
+    deficit+=row.removed-previousRemoved-p.refill*Math.max(.28,1-row.removed*.1/p.excess)*dt/60;
     variance+=.00015*dt;
     const measurement=plasma*(1-row.rbv/100), gain=variance/(variance+.0025);
-    deficit+=gain*(measurement-deficit); variance=(1-gain)*variance; previous=row.minute;
+    deficit+=gain*(measurement-deficit); variance=(1-gain)*variance; previous=row.minute;previousRemoved=row.removed;
   }
   const start=good.find(x=>x.minute>=now-20)||good[0];
-  const refillObserved=last.minute>start.minute?last.uf-(start.rbv-last.rbv)*plasma/100*60/(last.minute-start.minute):p.refill;
+  const refillObserved=last.minute>start.minute?((last.removed-start.removed)-(start.rbv-last.rbv)*plasma/100)*60/(last.minute-start.minute):p.refill;
   const refill=clamp(.65*refillObserved+.35*p.refill*Math.max(.28,1-last.removed*.1/p.excess),.05,1.5);
   const trend=regression(recent), slope=clamp(trend.slope,-1.8,.8);
   const sbp=bp.sbp+slope*(now-bp.minute);
@@ -57,7 +60,7 @@ export function estimate(p,readings,now) {
 }
 export function forecast(p,state,{uf=state.last?.uf??p.uf,horizon=30}={}) {
   if(!state.valid) return {valid:false,reason:state.reason,points:[],crossing:null,riskFraction:null,status:'unavailable'};
-  if(!finite(uf,0,2)||!finite(horizon,5,60)) throw new Error('Scenario outside supported bounds.');
+  if(!finite(uf,0,2)||!finite(horizon,5,60)||!Number.isInteger(horizon)) throw new Error('Scenario outside supported bounds. Use a whole-minute horizon.');
   let deficit=state.deficit; const points=[{minute:state.now,sbp:state.sbp,low:state.sbp,high:state.sbp}];
   for(let t=1;t<=horizon;t++) {
     const refill=state.refill*Math.exp(-t/(p.excess*600));

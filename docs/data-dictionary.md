@@ -12,7 +12,8 @@ Import a JSON object with `synthetic: true`, `patient`, and `readings`. Files ar
 | sensitivity | mmHg/L, 10-180; synthetic pressure response prior |
 | uf | L/hour, 0-2; nominal session removal rate |
 | excess | L, 0.5-8; synthetic fluid-excess parameter |
-| diabetes, albumin, history | Context; diabetes affects generator, not direct estimator input |
+| history | Optional integer 0-6: prior hypotensive sessions in the last six; display context only |
+| diabetes, albumin | Built-in generator context; not retained by the importer or used directly by the estimator |
 | seed | Deterministic generator seed, not sent to forecasting logic |
 
 | Dynamic key | Units / validation |
@@ -22,9 +23,9 @@ Import a JSON object with `synthetic: true`, `patient`, and `readings`. Files ar
 | rbv | Relative blood volume %, 30-110 |
 | hr | beats/min, 30-220; display context only |
 | uf | L/hour, 0-2 |
-| removed | Cumulative L, 0-15 |
+| removed | Cumulative L, 0-15; must not decrease |
 | quality | `good` or `poor` |
 
-The supplied synthetic generator uses one-minute records and five-minute cuffs. Maximum import length: 1,441 records; minimum import duration: 30 minutes. The dashboard replay control spans minutes 15-210. Imported short sessions eventually become stale; no observations are invented. Cumulative removal monotonicity and cross-field mass balance are not presently enforced: the importer is a bounded demo contract, not a clinical ingestion service.
+The supplied synthetic generator uses one-minute records and five-minute cuffs. Maximum import length: 1,441 records; minimum import duration: 30 minutes. Replay bounds follow the selected session’s first and last timestamps. Playback stops at its last record and restarts from the beginning when Replay is pressed again. Import duration is measured as last minus first timestamp. Duplicate IDs receive an -IMP-N suffix, so existing sessions and review history are retained. Sex values F/Female and M/Male are normalised; other values are labelled unspecified. Unknown metadata and hidden truth are discarded. Cumulative removal must be nondecreasing; cross-field mass balance is not enforced. This is a bounded demo contract, not a clinical ingestion service.
 
 The generator's internal `truth` is retained only for evaluation, stripped from UI data, and never used as an estimator feature. Separate generation and estimation functions make this boundary inspectable.

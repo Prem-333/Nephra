@@ -28,3 +28,34 @@ test('workload target reports assumptions rather than measured performance',()=>
 test('handover handles missing observations without inventing a forecast',()=>{const s=estimate(p,rows.filter(x=>x.minute<20),120);assert.match(handover(p,s,forecast(p,s)),/Forecast withheld/);});
 test('current low pressure takes precedence over future warning',()=>{const low=rows.map(x=>x.sbp!==null?{...x,sbp:80}:x);assert.equal(forecast(p,estimate(p,low,120)).status,'current-low');});
 test('baseline follows the latest dynamic removal rate rather than historical default',()=>{const changed=rows.map(x=>x.minute>=115?{...x,uf:.5}:x);const s=estimate(p,changed,120);assert.equal(forecast(p,s).uf,.5);});
+
+test('refill and deficit use removed volume over the interval, not an instantaneous rate',()=>{
+ const base=estimate(p,rows,120),changed=estimate(p,rows.map(x=>x.minute===120?{...x,uf:1.8}:x),120);
+ assert.equal(changed.refill,base.refill);assert.equal(changed.deficit,base.deficit);
+ assert.equal(forecast(p,changed).uf,1.8);
+ assert.notEqual(forecast(p,changed).nadir,forecast(p,base).nadir);
+});
+test('constant blood volume implies observed refill equals interval-average removal',()=>{
+ const constant=rows.map(x=>({...x,rbv:100,removed:x.minute/60,uf:x.minute===120?2:1}));
+ const s=estimate(p,constant,120),expected=.65+.35*p.refill*Math.max(.28,1-2*.1/p.excess);
+ assert.ok(Math.abs(s.refill-expected)<1e-10);
+});
+test('decreasing cumulative removal and invalid historical counts are rejected',()=>{
+ assert.throws(()=>validateReadings([{...rows[0],removed:1},{...rows[1],removed:.5}]),/must not decrease/);
+ for(const history of [-1,7,1.5,'3',null])assert.throws(()=>validatePatient({...p,history}),/history/);
+});
+test('fractional horizons are rejected instead of misreporting forecast duration',()=>{
+ assert.throws(()=>forecast(p,estimate(p,rows,120),{horizon:5.5}),/whole-minute/);
+});
+test('every minute of all demo sessions supports bounded scenarios or explicit withholding',()=>{
+ for(const patient of patients){const readings=publicReadings(generateSession(patient));
+  for(let minute=0;minute<=240;minute++){
+   const state=estimate(patient,readings,minute);
+   for(const uf of [0,.62,2]){const prediction=forecast(patient,state,{uf});
+    if(!state.valid){assert.equal(prediction.valid,false);continue;}
+    assert.equal(prediction.points.length,31);assert.ok(Number.isFinite(prediction.nadir));
+    assert.ok(prediction.points.every(point=>[point.sbp,point.low,point.high].every(Number.isFinite)));
+   }
+  }
+ }
+});

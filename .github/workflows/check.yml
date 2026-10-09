@@ -10,3 +10,4 @@ jobs:
           node-version: '22'
       - run: npm run check
       - run: npm run evaluate
+      - run: git diff --exit-code -- dist/data/evaluation.json docs/evaluation-windows.csv

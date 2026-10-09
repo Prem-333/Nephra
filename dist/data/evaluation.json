@@ -1,16 +1,16 @@
 {
-  "model": "nephra-state-space-1.0",
+  "model": "nephra-state-space-1.1",
   "data": "Synthetic only; same-generating-family engineering evaluation, not clinical evidence.",
   "seed": 73021,
   "patients": 300,
   "windows": 1193,
   "eventWindows": 128,
-  "protocol": "Patient-seeded held-out cohort; one session per patient; windows at 60,90,120,150,180 min; endpoint minimum latent synthetic SBP over next 30 min; current low estimates excluded. Repeated windows are correlated.",
+  "protocol": "Separate patient-seeded cohort inspected during development; one session per patient; windows at 60,90,120,150,180 min; endpoint minimum latent synthetic SBP over next 30 min; current low estimates excluded. Repeated windows are correlated.",
   "threshold": 90,
   "bandCoverage": 0.9949706621961442,
   "methods": {
     "Personalised twin": {
-      "mae": 2.2528127010847934,
+      "mae": 2.252905172704468,
       "recall": 0.8671875,
       "specificity": 0.9981220657276996,
       "precision": 0.9823008849557522,

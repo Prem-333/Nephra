@@ -34,3 +34,8 @@
  .replay button,.replay select{min-height:44px}
  .signal-detail .signal-big{font-size:30px}
 }
+
+.replay output{font-size:13px;font-weight:600;white-space:nowrap}
+
+.body-panel h3{overflow-wrap:anywhere}.twin-patient-select select{max-width:280px}
+@media(max-width:700px){.twin-patient-select select{max-width:250px}}

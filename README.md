@@ -5,6 +5,8 @@
 
 [Open the hosted prototype](https://nephra-dialysis-twin.dainty-shark-5340.chatgpt.site)
 
+[Bug audit and regression results](docs/bug-audit.md) — corrected model revision 1.1; 27 automated tests pass.
+
 NEPHRA combines a synthetic historical record with a changing medical-IoT stream to forecast systolic blood pressure over the next 30 minutes. Staff can inspect why the forecast changed, explore a hypothetical fluid-removal scenario, and export a review draft without retyping the observations.
 
 ![NEPHRA patient-specific body signal map](docs/screenshots/body-twin-female.png)
@@ -107,7 +109,7 @@ The local server binds to loopback only. A hosted static deployment runs the sam
 
 ## AI / ML model and framework details
 
-**Model:** `nephra-state-space-1.0`, a mechanistic model with adaptive state estimation. It is deliberately not described as a trained neural network.
+**Model:** `nephra-state-space-1.1`, a mechanistic model with adaptive state estimation. It is deliberately not described as a trained neural network.
 
 1. Historical priors initialise circulating-volume size, refill rate and pressure sensitivity.
 2. A scalar Kalman filter assimilates relative-blood-volume measurements into a latent volume-deficit estimate.
