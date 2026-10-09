@@ -1,10 +1,10 @@
 {
   "name": "nephra-digital-twin",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "description": "Explainable dialysis digital twin. Synthetic research prototype.",
   "engines": {"node": ">=20"},
-  "scripts": {"start": "node scripts/serve.mjs", "test": "node --test tests/*.test.mjs", "evaluate": "node scripts/evaluate.mjs", "check": "node --check dist/app.js && node --check dist/lib/twin.js && node --test tests/*.test.mjs"},
+  "scripts": {"start": "node scripts/serve.mjs", "test": "node --test tests/*.test.mjs", "evaluate": "node scripts/evaluate.mjs", "check": "node --check dist/boot.js && node --check dist/lib/workspace.js && node --check dist/app.js && node --check dist/lib/twin.js && node --test tests/*.test.mjs"},
   "license": "MIT"
 }

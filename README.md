@@ -206,3 +206,6 @@ tests/
 ## License
 
 [MIT License](LICENSE) — Copyright © 2026 NEPHRA contributors. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for external references.
+## Workspace 1.2 — interface and reliability update
+
+The refined workspace includes patient/page search (Ctrl or Command K), focus mode, an attention queue, accessible forecast values, scenario shortcuts, review undo, copy/print/export, and recoverable loading/error states. Run `npm run check` for the current **30 checks**. See [product readiness and validation](docs/product-readiness.md) for shipped capabilities and the remaining requirements before clinical use. This is a deployable synthetic research product, not a clinically validated system.
