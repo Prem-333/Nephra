@@ -101,7 +101,11 @@ NEPHRA supports a research workflow for nurses and nephrologists reviewing maint
 
 ## 10. Architecture Diagram (PDF/PPT)
 
-[Download the architecture diagram (PDF)](dist/docs/architecture.pdf).
+- [View the architecture diagram on Google Drive](https://drive.google.com/file/d/1VEXY88QO6mF9oiz2O2XGyVFF3enl0toK/view?usp=sharing)
+- [Download the architecture diagram](https://drive.google.com/uc?export=download&id=1VEXY88QO6mF9oiz2O2XGyVFF3enl0toK)
+- [Repository copy (PDF)](dist/docs/architecture.pdf)
+
+**Access verification pending:** Confirm that the Drive file is shared as “Anyone with the link” with Viewer access and that downloading is enabled.
 
 ### Architecture Overview
 
