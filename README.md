@@ -195,11 +195,48 @@ tests/
 
 ## Team
 
-<!-- TODO: add team members -->
+**Team name:** Atreides
 
-| Name | Role | Link |
-|---|---|---|
-| | | |
+### Team details and project responsibilities
+
+The responsibilities cover three complementary project aspects: technical leadership and modelling, product experience and application development, and validation and submission delivery.
+
+| Team member | Project aspect | Role 1 | Role 2 | Role 3 |
+|---|---|---|---|---|
+| **Premnath V R** | Technical leadership and digital twin | **Team Leader** | Systems Architecture Lead | Digital Twin Modelling Lead |
+| **Mirthika S** | Product experience and application development | UI/UX Design Lead | Frontend Development Lead | Interactive Body Visualisation Lead |
+| **Dharshini T** | Validation and submission delivery | Software Quality Assurance Lead | Synthetic Data Evaluation Lead | Documentation and Demo Presentation Lead |
+
+### College / Incubator information
+
+**College:** Bannari Amman Institute of Technology
+
+---
+
+## Healthcare Use Case
+
+NEPHRA supports a research workflow for nurses and nephrologists reviewing maintenance haemodialysis sessions. It combines synthetic historical context and simulated sensor observations to project systolic blood pressure over the next 30 minutes, explain the model's drivers, compare hypothetical fluid-removal rates, and prepare a review draft for human verification. The prototype uses synthetic data and does not issue treatment or machine commands.
+
+## AI/ML Model or Framework Details
+
+**Model:** `nephra-state-space-1.1`, an adaptive mechanistic state-space model implemented in dependency-free JavaScript. A scalar Kalman filter updates the circulating-volume deficit using relative blood volume. The forecast combines fluid-balance modelling with recent cuff-pressure trends. No pretrained neural network or clinical training dataset is used. See the [model card](docs/model-card.md) for equations, assumptions, and validation limits.
+
+## Submission Resources and Mandatory README Checklist
+
+- [x] [Team details](#team) — Atreides and all three members with project responsibilities.
+- [x] [College / Incubator information](#college--incubator-information) — Bannari Amman Institute of Technology.
+- [x] Project title — **NEPHRA: A Patient-Specific Digital Twin for Dialysis Review**.
+- [x] [Problem statement](#the-problem).
+- [x] [Healthcare use case](#healthcare-use-case).
+- [x] [Technical stack](#tech-stack).
+- [x] [AI/ML model or framework details](#aiml-model-or-framework-details).
+- [ ] **15–20 minute unlisted YouTube demo:** Upload the video and replace this line with its URL. The [existing 20-minute walkthrough](output/NEPHRA-20-minute-demo.mp4) is a local deliverable and does not complete the YouTube requirement.
+- [x] [Open-source license details](#license) — MIT.
+- [x] [Architecture diagram in PDF format](dist/docs/architecture.pdf).
+- [x] [Presentation in PDF format covering project details and outcomes](dist/docs/presentation.pdf).
+- [ ] **Public accessibility:** Verify the final GitHub repository, every document link, and the unlisted YouTube video while signed out. All must open without additional permissions.
+
+The linked PDF presentation and existing walkthrough reflect an earlier visual release. Replace them with the team's final presentation and recording when ready.
 
 ---
 
