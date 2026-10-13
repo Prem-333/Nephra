@@ -1,6 +1,7 @@
 node_modules/
 .sites-runtime/
 tmp/
+output/
 *.tar.gz
 *.zip
 .env*

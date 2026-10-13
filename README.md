@@ -85,11 +85,12 @@ NEPHRA supports a research workflow for nurses and nephrologists reviewing maint
 
 ## 8. Demo Video (15–20 Minutes, Unlisted YouTube)
 
-**Unlisted YouTube link:** TODO — upload the final 15–20 minute demo and add its URL here.
+**YouTube demo:** [Watch NEPHRA — Explainable Dialysis Digital Twin | Team Atreides](https://youtu.be/4h-k-ecFVXE)
 
-[Download the existing 20-minute walkthrough](output/NEPHRA-20-minute-demo.mp4). This local deliverable does not complete the YouTube requirement. It reflects an earlier visual release and can be replaced with the team’s final recording.
+The demo covers the patient digital twin, interactive body maps, scenario comparisons, data-quality safeguards, review preparation, evaluation results, and validation roadmap.
 
-- [ ] Final video uploaded as Unlisted on YouTube and linked above.
+- [x] Demo video uploaded to YouTube and linked above.
+- [ ] Confirm the YouTube video visibility is set to Unlisted.
 
 ---
 
