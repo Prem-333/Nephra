@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {patients,generateSession,publicReadings,cohort} from '../dist/lib/data.js';
-import {estimate,forecast,validateReadings,validatePatient,workload,handover} from '../dist/lib/twin.js';
+import {patients,generateSession,publicReadings,cohort} from '../shared/engine/data.js';
+import {estimate,forecast,validateReadings,validatePatient,workload,handover} from '../shared/engine/twin.js';
 const p=patients[0],rows=publicReadings(generateSession(p));
 test('forecast is causal: future observations cannot affect a current forecast',()=>{
  const a=forecast(p,estimate(p,rows,120)),b=forecast(p,estimate(p,rows.filter(x=>x.minute<=120),120));assert.deepEqual(a,b);

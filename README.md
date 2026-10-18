@@ -24,14 +24,14 @@ The responsibilities cover three complementary project aspects: technical leader
 
 **NEPHRA: A Patient-Specific Digital Twin for Dialysis Review**
 
-A patient-specific digital twin that fuses synthetic historical records with simulated medical-IoT streams to forecast systolic blood pressure 30 minutes ahead during dialysis, show *why* the forecast changed, and let staff explore a what-if fluid-removal scenario — all running in the browser with zero backend.
+A patient-specific digital twin that fuses synthetic historical records with simulated medical-IoT streams to forecast systolic blood pressure 30 minutes ahead during dialysis, show *why* the forecast changed, and let staff explore a what-if fluid-removal scenario — with a responsive browser workspace and a Node.js/SQLite backend for saving synthetic sessions and reviews. The public static demo also works independently of the backend.
 
 ![MIT License](https://img.shields.io/badge/license-MIT-green)
-![Node ≥ 20](https://img.shields.io/badge/node-%E2%89%A5%2020-blue)
+![Node ≥ 24.15](https://img.shields.io/badge/node-%E2%89%A5%2024.15-blue)
 ![CI](https://img.shields.io/github/actions/workflow/status/Prem-333/Nephra/check.yml?label=CI)
 ![Vanilla JS](https://img.shields.io/badge/stack-Vanilla%20JS%20%2B%20SVG-orange)
 
-<!-- TODO: screenshot or 60s demo GIF here -->
+![NEPHRA 1.4 patient workspace](docs/screenshots/workspace-1.4.png)
 
 ---
 
@@ -47,11 +47,11 @@ NEPHRA supports a research workflow for nurses and nephrologists reviewing maint
 
 ### Implemented Solution
 
-- **30-minute pressure forecast** — a mechanistic state-space model (`nephra-state-space-1.1`) predicts systolic BP trajectory per patient with a sensitivity band and 21-member perturbation ensemble ([`twin.js → forecast()`](dist/lib/twin.js))
-- **Scalar Kalman state estimation** — fuses relative-blood-volume sensors into a latent circulating-volume-deficit estimate in real time, gated by data-quality checks ([`twin.js → estimate()`](dist/lib/twin.js))
-- **Scenario lab** — staff adjust a hypothetical UF rate and instantly see the pressure-vs-fluid-removed tradeoff from the same current state ([`app.js → scenarios()`](dist/app.js))
-- **Interactive body signal map** — sex-matched anatomical illustration with five annotated regions; each region discloses whether its data is observed, modelled, historical, or unavailable ([`body.js → bodySignals()`](dist/lib/body.js))
-- **Automated review draft & export** — deterministic handover note assembled from observations and model output; downloadable as text with a local review log ([`twin.js → handover()`](dist/lib/twin.js))
+- **30-minute pressure forecast** — a mechanistic state-space model (`nephra-state-space-1.1`) predicts systolic BP trajectory per patient with a sensitivity band and 21-member perturbation ensemble ([`twin.js → forecast()`](shared/engine/twin.js))
+- **Scalar Kalman state estimation** — fuses relative-blood-volume sensors into a latent circulating-volume-deficit estimate in real time, gated by data-quality checks ([`twin.js → estimate()`](shared/engine/twin.js))
+- **Scenario lab** — staff adjust a hypothetical UF rate and instantly see the pressure-vs-fluid-removed tradeoff from the same current state ([`app.js → scenarios()`](frontend/src/app.js))
+- **Interactive body signal map** — sex-matched anatomical illustration with five annotated regions; each region discloses whether its data is observed, modelled, historical, or unavailable ([`body.js → bodySignals()`](shared/engine/body.js))
+- **Automated review draft & export** — deterministic handover note assembled from observations and model output; downloadable as text with a local review log ([`twin.js → handover()`](shared/engine/twin.js))
 - **Reproducible evaluation** — 300-patient synthetic cohort benchmarked against two baselines; confusion matrices and per-window CSV regenerable via `npm run evaluate` ([`evaluate.mjs`](scripts/evaluate.mjs))
 
 ---
@@ -60,12 +60,13 @@ NEPHRA supports a research workflow for nurses and nephrologists reviewing maint
 
 | Layer | Technology | Why |
 |---|---|---|
-| Interface | Semantic HTML, responsive CSS, vanilla JS ES modules, inline SVG charts | Zero dependencies; runs offline after first load |
+| Interface | Semantic HTML, responsive CSS, vanilla JS ES modules, inline SVG charts | No production dependencies; responsive, keyboard-accessible workspace |
 | Twin engine | Dependency-free JS numerical routines (`twin.js`, `data.js`) | Deterministic seeded generation; no ML framework needed for mechanistic model |
 | Body visualisation | `body.js` + PNG anatomical assets | Accessible hover/focus/tap regions with provenance disclosure |
-| Runtime & tests | Node.js ≥ 20, `node:test`, `node:assert` | No test framework to install; `npm test` runs 17 behavioural checks |
-| Persistence | Browser `localStorage` | Capped at 100 review entries; no server-side state |
-| CI | GitHub Actions, Node 22 | Syntax check + test + reproducible evaluation on every push ([`check.yml`](.github/workflows/check.yml)) |
+| Backend | Node.js ≥ 24.15, built-in HTTP and SQLite | Versioned migrations, isolated browser workspaces, validated API, atomic saves |
+| Runtime & tests | `node:test`, `node:assert` | 44 model, workspace and backend checks; no test framework to install |
+| Persistence | SQLite + browser fallback | Explicit Save workspace persists up to 20 imported sessions and 100 reviews; browser-only mode stores review markers locally |
+| CI | GitHub Actions, Node 24 | Syntax checks, tests, reproducible evaluation and static build on every push ([`check.yml`](.github/workflows/check.yml)) |
 | Docs (optional) | Python ReportLab + Poppler | Only for regenerating architecture/presentation PDFs |
 
 ---
@@ -76,10 +77,10 @@ NEPHRA supports a research workflow for nurses and nephrologists reviewing maint
 
 ### What Makes This Different
 
-- **Mechanistic model, not a black box** — the forecast is a forward fluid-balance simulation fused with a Kalman-corrected deficit and a least-squares cuff slope, not a pretrained neural network. Every driver (pressure trend, deficit, refill rate, history) is displayed alongside the prediction ([`twin.js` L37–59](dist/lib/twin.js)).
-- **Counterfactual scenario from the same state** — the scenario lab runs `forecast()` a second time with a different UF rate from the *identical* estimated state, so the tradeoff (pressure vs. fluid removed) is a direct comparison, not a separate model ([`twin.js` L61–81](dist/lib/twin.js)).
-- **Principled data-quality gates** — the estimator *withholds* the forecast entirely when cuff readings are stale (>10 min), sensor quality is poor, or fewer than 3 good readings exist in the last 25 minutes, rather than producing a silently degraded output ([`twin.js` L43](dist/lib/twin.js)).
-- **Provenance at every body region** — each of the five body-map regions explicitly labels its data as "Observed," "Modelled," "Historical context," or "Not measured," and states what is *not* inferred (e.g., "No organ damage … is inferred") ([`body.js` L10–36](dist/lib/body.js)).
+- **Mechanistic model, not a black box** — the forecast is a forward fluid-balance simulation fused with a Kalman-corrected deficit and a least-squares cuff slope, not a pretrained neural network. Every driver (pressure trend, deficit, refill rate, history) is displayed alongside the prediction ([`twin.js` L37–59](shared/engine/twin.js)).
+- **Counterfactual scenario from the same state** — the scenario lab runs `forecast()` a second time with a different UF rate from the *identical* estimated state, so the tradeoff (pressure vs. fluid removed) is a direct comparison, not a separate model ([`twin.js` L61–81](shared/engine/twin.js)).
+- **Principled data-quality gates** — the estimator *withholds* the forecast entirely when cuff readings are stale (>10 min), sensor quality is poor, or fewer than 3 good readings exist in the last 25 minutes, rather than producing a silently degraded output ([`twin.js` L43](shared/engine/twin.js)).
+- **Provenance at every body region** — each of the five body-map regions explicitly labels its data as "Observed," "Modelled," "Historical context," or "Not measured," and states what is *not* inferred (e.g., "No organ damage … is inferred") ([`body.js` L10–36](shared/engine/body.js)).
 
 ---
 
@@ -122,11 +123,13 @@ flowchart LR
     FCST --> DASH["app.js: Dashboard<br/>& Body Map"]
     SCEN --> DASH
     DASH --> NOTE["twin.js: Deterministic<br/>Review Draft"]
-    NOTE --> STORE["localStorage:<br/>Review Log"]
+    NOTE --> STORE["Browser review markers"]
+    DASH --> API["backend: Validated HTTP API"]
+    API --> DB["SQLite: Sessions + Reviews"]
     EVAL["evaluate.mjs: 300-patient<br/>Synthetic Cohort"] --> METRICS["evaluation.json:<br/>Confusion Matrices"]
 ```
 
-> **Runtime boundary:** All computation executes in the browser. The Node server ([`serve.mjs`](scripts/serve.mjs)) only serves static files on `127.0.0.1:4173`. No API keys, no cloud model calls, no data upload.
+> **Runtime boundary:** The browser computes live forecasts through the shared engine. `npm start` serves the UI and a real local API on `127.0.0.1:4173`; explicit saves send synthetic workspace snapshots to SQLite. The API also exposes the same forecast engine. The public Sites deployment is the standalone static edition and has no server persistence. See the [current full-stack architecture](docs/architecture.md) and [backend API guide](backend/README.md). The PDF above illustrates the earlier browser-only edition.
 
 ### End-to-End Forecast Flow
 
@@ -187,68 +190,55 @@ The final GitHub repository, document links, and unlisted YouTube video must ope
 
 ### Quickstart
 
-**Prerequisites:** Node.js 20+. No API key, `npm install`, or external service needed.
+**Prerequisites:** Node.js **24.15 or newer**. No API key or dependency installation is required.
 
 ```bash
-# Start the local server
-npm start
-# → http://127.0.0.1:4173
-
-# Run 17 behavioural tests
-npm test
-
-# Regenerate the 300-patient evaluation
-npm run evaluate
-
-# Syntax check + tests + evaluation in one shot
-npm run check
+npm start          # Frontend + backend at http://127.0.0.1:4173
+npm run dev        # Same app, restart backend when source changes
+npm run check      # Syntax validation and all 44 tests
+npm run evaluate   # Reproduce the 300-patient synthetic benchmark
+npm run build      # Create the public static edition in dist/
+npm run serve:dist # Preview dist/ at http://127.0.0.1:4173
 ```
 
-Open `http://127.0.0.1:4173` in any modern browser. Do **not** double-click `index.html` — JS modules require an HTTP server.
+Use one server command at a time on the default port. Set `PORT` to choose another port. In full-stack mode, use **Save workspace** to persist imported synthetic sessions and review markers. Data survives server restart; the same browser cookie reconnects to its saved workspace. Clearing the cookie loses access to that workspace. The server binds only to the local computer. Do not double-click `index.html`; ES modules require HTTP.
 
-<details>
-<summary><strong>Project Structure</strong></summary>
+### Project Structure
 
 ```text
-dist/                        Deployable static application
-  index.html                 Single-page entry point
-  app.js                     Dashboard, views, replay controls, event binding
-  style.css                  Responsive CSS with dark sidebar
-  lib/
-    twin.js                  Validation, Kalman estimation, forecast, handover
-    data.js                  Seeded synthetic patient cohort + session generator
-    session.js               Import parsing, replay bounds, HTML escaping
-    body.js                  Anatomical body-signal projection (5 regions)
-  assets/
-    body-female.png           Female anatomical illustration
-    body-male.png             Male anatomical illustration
-  data/
-    evaluation.json           Machine-readable benchmark metrics
-  docs/
-    architecture.pdf          Architecture diagram (PDF)
-    presentation.pdf          Project presentation (PDF)
-    model-card.md             Model card
-docs/                        Methods, validation, pilot plan, demo script
-  architecture.md            Mermaid source for architecture diagram
-  model-card.md              Model limitations and intended use
-  data-dictionary.md         Synthetic data schema
-  validation.md              Evaluation protocol and known limitations
-  pilot-and-business-case.md Prospective pilot measurement plan
-  evaluation-windows.csv     Per-window prediction CSV (1,193 rows)
-  screenshots/               Dashboard, body map, scenario, workflow captures
-scripts/
-  serve.mjs                  Zero-dependency static file server (loopback)
-  evaluate.mjs               300-patient cohort evaluation pipeline
-  build-docs.py              PDF generation (ReportLab; optional)
-tests/
-  twin.test.mjs              17 behavioural model tests (causal, bounds, quality)
-  session.test.mjs           Import parsing and replay tests
-  body.test.mjs              Body signal projection tests
-.github/workflows/
-  check.yml                  CI: syntax + tests + reproducible evaluation
+frontend/                    Browser application
+  index.html                 Entry point and content security policy
+  src/
+    app.js                   Application orchestration and event binding
+    core/                    State, routing, constants, icons
+    views/                   Unit, twin, scenarios, handover, evidence
+    components/              Charts, body map, dialogs, patient controls
+    services/api.js          Backend connection and explicit workspace save
+    styles/                  Base, component and refined workspace styles
+    utils/                   Formatting and browser helpers
+  public/                    Anatomical assets, benchmark, PDFs, model card
+backend/                     Local research API
+  src/server.js              Server startup and graceful shutdown
+  src/app.js                 HTTP routing, security boundaries, static serving
+  src/service.js             Input validation and authoritative forecasts
+  src/repository.js          SQLite transactions and workspace persistence
+  migrations/               Versioned database schema
+  tests/                     HTTP integration and persistence tests
+  data/                      Local runtime database (ignored by Git)
+shared/engine/               One model used by browser, API and tests
+  twin.js                    Estimation, forecast, sensitivity, review draft
+  data.js                    Seeded synthetic cohort and observations
+  session.js                 Import validation and replay bounds
+  body.js                    Body-region signals and provenance
+  workspace.js               Queue, routing, review and benchmark validation
+scripts/                     Build, checks, evaluation, static preview, PDFs
+tests/                       Model, body, import and workspace regression tests
+docs/                        Model card, methods, architecture, QA and roadmap
+dist/                        Generated static deployment; never edit directly
+.github/workflows/           Continuous verification
 ```
 
-</details>
+Read the [frontend guide](frontend/README.md), [backend guide](backend/README.md), [architecture](docs/architecture.md), and [QA report](docs/qa-report.md).
 
 ### Challenges & What We Learned
 
@@ -266,8 +256,8 @@ tests/
 - **Standards-based integration** — FHIR-compatible observation input and HL7 alert output for hospital EHR connectivity
 - **Silent clinical pilot** — run the model shadow-mode alongside standard monitoring, measure time-to-review and false-alert rate before any assisted workflow
 
-### Workspace 1.2 — Interface and Reliability Update
+### Workspace 1.4 — Full-Stack Research Edition
 
-The refined workspace includes patient/page search (Ctrl or Command K), focus mode, an attention queue, accessible forecast values, scenario shortcuts, review undo, copy/print/export, and recoverable loading/error states. Run `npm run check` for the current **30 checks**. See [product readiness and validation](docs/product-readiness.md) for shipped capabilities and the remaining requirements before clinical use. This is a deployable synthetic research product, not a clinically validated system.
+The refined light workspace includes a priority review queue, patient/page search, male/female body maps, contextual review navigation, scenario comparisons, and explicit evidence limits. The backend adds validated synthetic workspace saves, SQLite persistence, conflict detection, and forecast endpoints. `npm run check` runs **44 tests**. See [product readiness](docs/product-readiness.md) for remaining deployment and clinical-validation work. No measured 90% workload reduction or clinical effectiveness is claimed.
 
 </details>

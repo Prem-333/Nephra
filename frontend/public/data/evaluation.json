@@ -1,0 +1,58 @@
+{
+  "model": "nephra-state-space-1.1",
+  "data": "Synthetic only; same-generating-family engineering evaluation, not clinical evidence.",
+  "seed": 73021,
+  "patients": 300,
+  "windows": 1193,
+  "eventWindows": 128,
+  "protocol": "Separate patient-seeded cohort inspected during development; one session per patient; windows at 60,90,120,150,180 min; endpoint minimum latent synthetic SBP over next 30 min; current low estimates excluded. Repeated windows are correlated.",
+  "threshold": 90,
+  "bandCoverage": 0.9949706621961442,
+  "methods": {
+    "Personalised twin": {
+      "mae": 2.252905172704468,
+      "recall": 0.8671875,
+      "specificity": 0.9981220657276996,
+      "precision": 0.9823008849557522,
+      "confusion": {
+        "tp": 111,
+        "tn": 1063,
+        "fp": 2,
+        "fn": 17
+      }
+    },
+    "Recent linear trend": {
+      "mae": 2.5845228116393253,
+      "recall": 0.828125,
+      "specificity": 0.9934272300469483,
+      "precision": 0.9380530973451328,
+      "confusion": {
+        "tp": 106,
+        "tn": 1058,
+        "fp": 7,
+        "fn": 22
+      }
+    },
+    "Last cuff carried forward": {
+      "mae": 6.466999161777036,
+      "recall": 0,
+      "specificity": 1,
+      "precision": null,
+      "confusion": {
+        "tp": 0,
+        "tn": 1065,
+        "fp": 0,
+        "fn": 128
+      }
+    }
+  },
+  "limitations": [
+    "No clinical training or validation",
+    "Generator and model share fluid-balance assumptions",
+    "Synthetic priors supplied rather than fitted to real records",
+    "No confidence intervals; repeated windows are correlated",
+    "No prospective workflow or clinical outcome measurements",
+    "No subgroup fairness conclusion"
+  ],
+  "reproduce": "npm run evaluate"
+}

@@ -7,3 +7,8 @@ output/
 .env*
 !.env.example
 __pycache__/
+
+backend/data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal

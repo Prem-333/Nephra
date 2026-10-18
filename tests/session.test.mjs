@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {patients,generateSession,publicReadings} from '../dist/lib/data.js';
-import {parseSession,uniqueImportId,replayBounds,clampReplayTime,nextReplayTime,escapeHTML} from '../dist/lib/session.js';
+import {patients,generateSession,publicReadings} from '../shared/engine/data.js';
+import {parseSession,uniqueImportId,replayBounds,clampReplayTime,nextReplayTime,escapeHTML} from '../shared/engine/session.js';
 const patient=patients[0],readings=publicReadings(generateSession(patient));
 const session={synthetic:true,patient,readings};
 
@@ -18,6 +18,9 @@ test('import strips hidden truth and unknown metadata and normalises display con
   const result=parseSession({...session,patient:{...patient,sex:' female ',age:-1,name:'Demo\nName',unexpected:'unused'},readings:generateSession(patient)});
   assert.equal(result.patient.sex,'F');assert.equal(result.patient.age,'Unknown');assert.equal(result.patient.name,'Demo Name');
   assert.equal('unexpected' in result.patient,false);assert.equal('truth' in result.readings[0],false);
+});
+test('empty or non-text imported names fall back to the validated patient ID',()=>{
+ for(const name of ['   ','\n\t',{},[],null])assert.equal(parseSession({...session,patient:{...patient,name}}).patient.name,patient.id);
 });
 test('duplicate imports receive distinct bounded IDs without overwriting reviewed sessions',()=>{
   assert.equal(uniqueImportId('NP-001',['NP-001','NP-001-IMP-1']),'NP-001-IMP-2');

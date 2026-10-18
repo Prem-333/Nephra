@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f6f8fa">
+  <meta name="description" content="NEPHRA is a synthetic dialysis digital twin research prototype: patient-specific forecasts, scenario exploration and automatic review drafts.">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <title>NEPHRA | Dialysis Digital Twin</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./src/styles/index.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to workspace</a>
+  <div id="app">
+    <div class="boot-screen">
+      <img src="./favicon.svg" alt="">
+      <h1>NEPHRA</h1>
+      <p>Preparing your patient workspace…</p>
+    </div>
+  </div>
+  <noscript>
+    <p class="notice">Enable JavaScript to open the interactive digital twin. <a href="./docs/presentation.pdf">Read the project presentation</a>.</p>
+  </noscript>
+  <dialog id="workspace-dialog" class="app-dialog" aria-labelledby="dialog-title"></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./src/boot.js"></script>
+</body>
+</html>

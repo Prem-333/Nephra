@@ -10,12 +10,12 @@ from reportlab.platypus import Paragraph
 from reportlab.lib.styles import ParagraphStyle
 
 ROOT=Path(__file__).resolve().parents[1]
-OUT=ROOT/'dist'/'docs'; OUT.mkdir(parents=True,exist_ok=True)
+OUT=ROOT/'frontend'/'public'/'docs'; OUT.mkdir(parents=True,exist_ok=True)
 TMP=ROOT/'tmp'/'video';TMP.mkdir(parents=True,exist_ok=True)
 INK='#123D3B';TEAL='#0A8177';MINT='#ABF1D5';GREY='#607D76';PAPER='#F4F8F6'
 W,H=1280,720
 slides=json.loads((ROOT/'docs/storyboard.json').read_text(encoding='utf-8'))
-metrics=json.loads((ROOT/'dist/data/evaluation.json').read_text())
+metrics=json.loads((ROOT/'frontend/public/data/evaluation.json').read_text())
 def text(c,s,x,y,size=26,color=INK,bold=False):
  c.setFillColor(HexColor(color));c.setFont('Helvetica-Bold' if bold else 'Helvetica',size);c.drawString(x,y,s)
 def para(c,s,x,y,width=1100,size=25,color=GREY):

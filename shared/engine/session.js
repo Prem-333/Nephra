@@ -8,7 +8,7 @@ export function parseSession(data) {
   validatePatient(data.patient);validateReadings(data.readings);
   if(data.readings.at(-1).minute-data.readings[0].minute<30)throw Error('Supply at least 30 minutes of observations.');
   const p=data.patient,sex=typeof p.sex==='string'?p.sex.trim().toUpperCase():'';
-  const patient={id:p.id,name:displayText(p.name||p.id),age:Number.isFinite(p.age)&&p.age>=0&&p.age<=120?p.age:'Unknown',sex:['F','FEMALE'].includes(sex)?'F':['M','MALE'].includes(sex)?'M':'Unknown',bed:'IMP'};
+  const patient={id:p.id,name:(typeof p.name==='string'?displayText(p.name):'')||p.id,age:Number.isFinite(p.age)&&p.age>=0&&p.age<=120?p.age:'Unknown',sex:['F','FEMALE'].includes(sex)?'F':['M','MALE'].includes(sex)?'M':'Unknown',bed:'IMP'};
   for(const key of ['weight','baselineSBP','refill','sensitivity','uf','excess','history'])if(p[key]!==undefined)patient[key]=p[key];
   const readings=data.readings.map(({minute,sbp,rbv,hr,uf,removed,quality})=>({minute,sbp,rbv,hr,uf,removed,quality}));
   return {patient,readings};
