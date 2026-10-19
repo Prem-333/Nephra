@@ -36,8 +36,18 @@ export function createApp({ database = ':memory:', frontend = path.join(root,'fr
       const port = server.address()?.port;
       if (![ `localhost:${port}`, `127.0.0.1:${port}`, `[::1]:${port}`, process.env.RENDER_EXTERNAL_HOSTNAME ].includes(host)) throw fail(403,'HOST_DENIED','This research backend accepts loopback hosts only.');
       const origin = req.headers.origin;
-      if ((origin && origin !== `http://${host}`) || req.headers['sec-fetch-site'] === 'cross-site') throw fail(403,'ORIGIN_DENIED','Cross-origin requests are not allowed.');
-      const url = new URL(req.url, `http://${host}`);
+const allowedOrigins = [
+  `https://${process.env.RENDER_EXTERNAL_HOSTNAME}`,
+  `http://${host}`
+];
+
+if (
+  (origin && !allowedOrigins.includes(origin)) ||
+  req.headers['sec-fetch-site'] === 'cross-site' &&
+  (!origin || !allowedOrigins.includes(origin))
+) {
+  throw fail(403, 'ORIGIN_DENIED', 'Cross-origin requests are not allowed.');
+}      const url = new URL(req.url, `http://${host}`);
       if (url.pathname.startsWith('/api/')) {
         if (url.pathname === '/api/health' && req.method === 'GET') return send(200,{status:'ok',version:'1.4.0',syntheticOnly:true,persistence:'sqlite'});
         let id = /(?:^|;\s*)nephra_workspace=([a-f0-9]{64})(?:;|$)/.exec(req.headers.cookie || '')?.[1];
