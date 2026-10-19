@@ -34,7 +34,7 @@ export function createApp({ database = ':memory:', frontend = path.join(root,'fr
     try {
       const host = req.headers.host || '';
       const port = server.address()?.port;
-      if (![ `localhost:${port}`, `127.0.0.1:${port}`, `[::1]:${port}` ].includes(host)) throw fail(403,'HOST_DENIED','This research backend accepts loopback hosts only.');
+      if (![ `localhost:${port}`, `127.0.0.1:${port}`, `[::1]:${port}`, process.env.RENDER_EXTERNAL_HOSTNAME ].includes(host)) throw fail(403,'HOST_DENIED','This research backend accepts loopback hosts only.');
       const origin = req.headers.origin;
       if ((origin && origin !== `http://${host}`) || req.headers['sec-fetch-site'] === 'cross-site') throw fail(403,'ORIGIN_DENIED','Cross-origin requests are not allowed.');
       const url = new URL(req.url, `http://${host}`);
