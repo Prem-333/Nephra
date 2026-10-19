@@ -54,7 +54,12 @@ if (origin && !allowedOrigins.includes(origin)) {
   );
 }
 
-if (isCrossSite && !origin) {
+if (
+  isCrossSite &&
+  !origin &&
+  req.method !== 'GET' &&
+  req.method !== 'HEAD'
+) {
   throw fail(
     403,
     'ORIGIN_DENIED',
