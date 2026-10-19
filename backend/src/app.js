@@ -47,11 +47,19 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 if (origin && !allowedOrigins.includes(origin)) {
-  throw fail(403, 'ORIGIN_DENIED', 'Cross-origin requests are not allowed.');
+  throw fail(
+    403,
+    'ORIGIN_DENIED',
+    `Origin rejected: ${origin}`
+  );
 }
 
 if (isCrossSite && !origin) {
-  throw fail(403, 'ORIGIN_DENIED', 'Cross-origin requests are not allowed.');
+  throw fail(
+    403,
+    'ORIGIN_DENIED',
+    'Cross-site request has no Origin header.'
+  );
 }
      const url = new URL(req.url, `http://${host}`);
       if (url.pathname.startsWith('/api/')) {
