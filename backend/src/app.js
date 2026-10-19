@@ -54,6 +54,7 @@ if (origin && !allowedOrigins.includes(origin)) {
   );
 }
 
+
 if (
   isCrossSite &&
   !origin &&
@@ -66,6 +67,7 @@ if (
     'Cross-site request has no Origin header.'
   );
 }
+
      const url = new URL(req.url, `http://${host}`);
       if (url.pathname.startsWith('/api/')) {
         if (url.pathname === '/api/health' && req.method === 'GET') return send(200,{status:'ok',version:'1.4.0',syntheticOnly:true,persistence:'sqlite'});
