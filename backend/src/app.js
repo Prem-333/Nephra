@@ -31,9 +31,25 @@ export function createApp({ database = ':memory:', frontend = path.join(root,'fr
     res.setHeader('X-Frame-Options','DENY');
     res.setHeader('Cache-Control','no-store');
     const send = (status, body) => { res.writeHead(status,{'Content-Type':'application/json; charset=utf-8'});res.end(JSON.stringify(body)); };
-    try {
-      const host = req.headers.host || '';
-      const port = server.address()?.port;
+    
+try {
+  const host = req.headers.host || '';
+
+  const healthUrl = new URL(req.url, `http://${host}`);
+
+  if (
+    healthUrl.pathname === '/api/health' &&
+    req.method === 'GET'
+  ) {
+    return send(200, {
+      status: 'ok',
+      version: '1.4.0',
+      syntheticOnly: true,
+      persistence: 'sqlite'
+    });
+  }
+
+  const port = server.address()?.port;
       if (![ `localhost:${port}`, `127.0.0.1:${port}`, `[::1]:${port}`, process.env.RENDER_EXTERNAL_HOSTNAME ].includes(host)) throw fail(403,'HOST_DENIED','This research backend accepts loopback hosts only.');
 
 const origin = req.headers.origin;
@@ -70,7 +86,6 @@ if (
 
      const url = new URL(req.url, `http://${host}`);
       if (url.pathname.startsWith('/api/')) {
-        if (url.pathname === '/api/health' && req.method === 'GET') return send(200,{status:'ok',version:'1.4.0',syntheticOnly:true,persistence:'sqlite'});
         let id = /(?:^|;\s*)nephra_workspace=([a-f0-9]{64})(?:;|$)/.exec(req.headers.cookie || '')?.[1];
         let saved = id ? repository.get(id) : null;
         if (url.pathname === '/api/workspace' && req.method === 'GET') {
